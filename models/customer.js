@@ -56,7 +56,8 @@ class Customer {
     return new Customer(customer);
   }
 
-  /** get customer by full name. */
+  /** get customer by name
+   * return any customers with names that contain search query */
 
   static async getByName(name) {
     const results = await db.query(
@@ -66,17 +67,11 @@ class Customer {
           phone,
           notes
         FROM customers
-        WHERE name = $1`,
+        WHERE CONCAT(first_name, ' ', last_name) ILIKE '%' || $1 || '%'`,
       [name]
     );
 
-    const customer = results.rows[0];
-
-    if (customer === undefined) {
-      const err = new Error(`No such customer: ${name}`);
-      err.status = 404;
-      throw err;
-    }
+    return results.rows.map(c => new Customer(c));
   }
 
   /** get all reservations for this customer. */

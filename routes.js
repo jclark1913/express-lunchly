@@ -10,16 +10,17 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
-/** Homepage: show list of customers. */
+/** Homepage: show list of all customers or results of customer search. */
 
 router.get("/", async function (req, res, next) {
-  if(req.body === undefined) {
+  console.log("search", req.query.search);
+  if(req.query.search === undefined) {
     const customers = await Customer.all();
     return res.render("customer_list.html", { customers });
   }
   else {
-    const customer = await Customer.getByName(req.body);
-    return res.render("cusomter_list.html", { customers: customer });
+    const customers = await Customer.getByName(req.query.search);
+    return res.render("customer_list.html", { customers });
   }
 });
 
