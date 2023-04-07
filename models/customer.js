@@ -68,11 +68,37 @@ class Customer {
           notes
         FROM customers
         WHERE CONCAT(first_name, ' ', last_name) ILIKE '%' || $1 || '%'`,
-      [name]
+        //can order by lastName
+      [name]  //could add % around name using string interpolation
     );
 
     return results.rows.map(c => new Customer(c));
   }
+
+  /** return top 10 customers by reservation count */
+
+  static async getTop10() {
+    const results = await db.query(
+      `SELECT customers.id,
+          first_name AS "firstName",
+          last_name  AS "lastName",
+          phone,
+          customers.notes AS notes,
+          COUNT(*) as num_reservations
+      FROM customers
+        INNER JOIN reservations
+          ON customers.id = reservations.customer_id
+      GROUP BY customers.id
+      ORDER BY num_reservations DESC
+      LIMIT 10`
+    )
+    // loop through all results.rows:
+    // const {firstName, lastName, phone, notes} = c;
+    // c = {firstName, lastName, phone, notes};
+
+    return results.rows.map(c => new Customer(c));
+  }
+
 
   /** get all reservations for this customer. */
 
@@ -85,8 +111,8 @@ class Customer {
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
-        `INSERT INTO customers (first_name, last_name, phone, notes)
-             VALUES ($1, $2, $3, $4)
+        `INSERT INTO customers(first_name, last_name, phone, notes)
+             VALUES($1, $2, $3, $4)
              RETURNING id`,
         [this.firstName, this.lastName, this.phone, this.notes],
       );
@@ -94,10 +120,10 @@ class Customer {
     } else {
       await db.query(
         `UPDATE customers
-             SET first_name=$1,
-                 last_name=$2,
-                 phone=$3,
-                 notes=$4
+             SET first_name = $1,
+      last_name = $2,
+      phone = $3,
+      notes = $4
              WHERE id = $5`, [
         this.firstName,
         this.lastName,
@@ -111,8 +137,8 @@ class Customer {
 
   /** get full name of single customer */
   fullName() {
-    return `${this.firstName} ${this.lastName}`;
+    return `${ this.firstName } ${ this.lastName }`;
   }
 }
 
-module.exports = Customer;
+module.exports = Customer;;
