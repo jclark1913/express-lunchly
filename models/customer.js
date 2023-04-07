@@ -16,6 +16,48 @@ class Customer {
     this.notes = notes;
   }
 
+  /** get full name of single customer */
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  /** get notes property */
+
+  get notes() {
+    return this._notes;
+  }
+
+  /** set notes property */
+  set notes(text) {
+    if (!text) {
+      this._notes = "";
+    } else {
+      this._notes = text;
+    }
+  }
+
+  /** get phone */
+  get phone() {
+    return this._phone;
+  }
+
+  /** set phone */
+  set phone(val) {
+    if (val === null) {
+      this._phone = "N/A";
+      return;
+    }
+    const allNums = "0123456789-()x.+* ";
+    let phoneNum = val.split("");
+    if (phoneNum.every(n => allNums.includes(n))) {
+      this._phone = val;
+    } else {
+      console.log("HERE'S THE VAL:", val)
+      throw new Error("All reservations must include a valid phone number");
+    }
+
+  }
+
   /** find all customers. */
 
   static async all() {
@@ -68,7 +110,7 @@ class Customer {
           notes
         FROM customers
         WHERE CONCAT(first_name, ' ', last_name) ILIKE '%' || $1 || '%'`,
-        //can order by lastName
+      //can order by lastName
       [name]  //could add % around name using string interpolation
     );
 
@@ -91,7 +133,7 @@ class Customer {
       GROUP BY customers.id
       ORDER BY num_reservations DESC
       LIMIT 10`
-    )
+    );
     // loop through all results.rows:
     // const {firstName, lastName, phone, notes} = c;
     // c = {firstName, lastName, phone, notes};
@@ -135,10 +177,6 @@ class Customer {
     }
   }
 
-  /** get full name of single customer */
-  fullName() {
-    return `${ this.firstName } ${ this.lastName }`;
-  }
 }
 
 module.exports = Customer;;

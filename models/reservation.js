@@ -17,14 +17,63 @@ class Reservation {
     this.notes = notes;
   }
 
-  /** formatter for startAt */
+  /** get customerId */
+  get customerId() {
+    return this._customerId;
+  }
 
+  /** set customerId */
+  set customerId(val) {
+    if (this._customerId) {
+      throw new Error("Customer id cannot be changed");
+    } else {
+      this._customerId = val
+    }
+  }
+
+  /** get notes */
+
+  get notes() {
+    return this._notes;
+  }
+
+  /** set notes */
+  set notes(text) {
+    if (!text) {
+      this._notes = "";
+    }
+    this._notes = text;
+  }
+
+  /** get numGuests */
+  get numGuests() {
+    return this._numGuests;
+  }
+
+  /** set numGuests */
+  set numGuests(val) {
+    if (val < 1) {
+      throw new Error("Reservations must include guests");
+    }
+    this._numGuests = val;
+  }
+
+  /** get startAt */
+  get startAt() {
+    return this._startAt;
+  }
+
+  /** set startAt */
+  set startAt(date) {
+    this._startAt = new Date(date);
+  }
+
+  /** formatter for startAt */
   getFormattedStartAt() {
     return moment(this.startAt).format("MMMM Do YYYY, h:mm a");
   }
 
   /** given a customer id, find their reservations. */
-
   static async getReservationsForCustomer(customerId) {
     const results = await db.query(
       `SELECT id,
