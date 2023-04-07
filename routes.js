@@ -44,6 +44,9 @@ router.post("/add/", async function (req, res, next) {
   }
   const { firstName, lastName, phone, notes } = req.body;
   const customer = new Customer({ firstName, lastName, phone, notes });
+  console.log("JUST NOTES:", (notes === ""))
+  console.log("CUSTOMER NOTES:", (customer.notes === ""))
+  console.log("CUSTOMER GET NOTES:", )
   await customer.save();
 
   return res.redirect(`/${customer.id}/`);
@@ -101,6 +104,8 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
     notes,
   });
   await reservation.save();
+
+  // console.log("RESERVATION NOTES:", Boolean(reservation.notes))
 
   return res.redirect(`/${customerId}/`);
 });
